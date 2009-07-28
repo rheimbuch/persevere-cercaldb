@@ -30,6 +30,17 @@ function Queue(options) {
             var exchange = options['exchange'];
             var key = options['key'];
             channel.queueBind(name, exchange, key);
+        },
+        consumer: function(options) {
+            options = options || {}
+            options.ack = options.ack || true
+            
+            var consumer = new client.QueueingConsumer(channel);
+            channel.basicConsume(name, !options.ack, consumer);
+            return consumer;
+        },
+        ack: function(delivery) {
+            channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
         }
     }
 };
